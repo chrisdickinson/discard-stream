@@ -1,0 +1,33 @@
+{
+  "name": "discard-stream",
+  "version": "1.0.0",
+  "description": "a transform stream that buffers up to N items, discarding on further writes",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "standard",
+    "test": "nyc node test.js && nyc report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chrisdickinson/discard-stream.git"
+  },
+  "keywords": [
+    "discard-stream",
+    "readable",
+    "stream",
+    "log",
+    "metered",
+    "ratelimit"
+  ],
+  "author": "Chris Dickinson <chris@neversaw.us> (http://neversaw.us/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrisdickinson/discard-stream/issues"
+  },
+  "homepage": "https://github.com/chrisdickinson/discard-stream#readme",
+  "devDependencies": {
+    "nyc": "^3.1.0",
+    "standard": "^5.1.1",
+    "tape": "^4.2.0"
+  }
+}
