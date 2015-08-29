@@ -135,3 +135,45 @@ test('double end nops', function (assert) {
   assert.equal(count, 1)
   assert.end()
 })
+
+test('unpipe halts stream if stream was flowing due to pipe', function (assert) {
+  var rs = createStream(10)
+  var ws = stream.Writable({objectMode: true})
+  ws._write = function (chunk, enc, ready) {
+    return setImmediate(ready)
+  }
+  ws.once('unpipe', function () {
+    rs.write(1)
+    assert.equal(rs.backlog.length, 1)
+    assert.equal(rs.backlog[0], 1)
+    assert.end()
+  })
+  rs.pipe(ws)
+  rs.unpipe()
+})
+
+test('unpipe does not halt stream if stream is still flowing', function (assert) {
+  var rs = createStream(10)
+  var ws = stream.Writable({objectMode: true})
+  var ws2 = stream.Writable({objectMode: true})
+  ws.name = 'ws1'
+  ws2.name = 'ws2'
+  ws2._write = ws._write = function (chunk, enc, ready) {
+    console.log(this.name, chunk)
+    return setImmediate(ready)
+  }
+  ws.once('unpipe', function () {
+    rs.write(1)
+    assert.deepEqual(rs.backlog, [1])
+    setImmediate(function () {
+      assert.deepEqual(rs.backlog, [])
+      assert.end()
+    })
+  })
+  rs.pipe(ws)
+  rs.unpipe(ws)
+})
+
+test('pause halts stream', function (assert) {
+  assert.end()
+})

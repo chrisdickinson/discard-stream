@@ -31,6 +31,9 @@ function BacklogStream (opts) {
   this._ending = false
   this.maxBacklog = opts.maxBacklog
   this._backlog = new List()
+  this.on('pause', function () {
+    this._reading = false
+  })
 }
 
 var cons = BacklogStream
@@ -85,6 +88,16 @@ proto._read = function (n) {
   while (this._reading && this._backlog.length) {
     this._reading = this.push(this._backlog.shift())
   }
+}
+
+proto.unpipe = function () {
+  var value = Readable.prototype.unpipe.apply(this, arguments)
+
+  // if we're piped to multiple destinations, pipeOnDrain will trigger a _read
+  // and all will be well, so let's play it safe and set _reading=false until
+  // we get a _read call.
+  this._reading = false
+  return value
 }
 
 function getBacklog () {
